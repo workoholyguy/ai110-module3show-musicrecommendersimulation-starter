@@ -13,9 +13,23 @@ Your goal is to:
 
 This project is a simplified content-based music recommender. Real-world platforms like Spotify and YouTube combine collaborative filtering (learning from millions of users' behavior) with content-based filtering (analyzing audio attributes like energy, tempo, and acousticness). Our simulation focuses on the content-based side: it scores each song against a user's taste profile using measurable features, then ranks and returns the best matches.
 
-### Screenshot
+### Screenshots
 
 ![Music Recommender CLI Output](screenshot.png)
+
+#### Stress Test: Diverse User Profiles
+
+**Happy Pop Fan**
+![Happy Pop Fan](Screenshot%201.png)
+
+**Chill Lofi Listener**
+![Chill Lofi Listener](Screenshot%202.png)
+
+**Intense Rock Fan**
+![Intense Rock Fan](Screenshot%203.png)
+
+**Edge Case: Sad + High Energy**
+![Edge Case: Sad + High Energy](Screenshot%204.png)
 
 ---
 
@@ -201,38 +215,34 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Experiments You Tried
 
-Use this section to document the experiments you ran. For example:
+- **Weight shift experiment**: I halved the genre weight from 2.0 to 1.0 and doubled the energy weight from 1.0 to 2.0. This made energy the dominant scoring factor. Songs that closely matched the user's target energy climbed the rankings even when their genre was wrong. For example, a high-energy electronic track started appearing in results for the Rock fan profile, which never happened before. This showed me how much control the weight values have over what the user sees.
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+- **Diverse profile testing**: I ran the system with four different user profiles — a pop fan, a lofi listener, a rock fan, and an edge case with contradictory preferences (sad + high energy). The first three profiles all produced results that felt right. The edge case was the most interesting because the system still returned confident-looking scores even though the input preferences didn't make sense together.
 
 ---
 
 ## Limitations and Risks
 
-Summarize some limitations of your recommender.
+- The catalog only has 18 songs, with most genres represented by a single track. One mislabeled song could throw off an entire profile's results.
+- The system does not understand lyrics, language, or cultural context. A Spanish-language latin track and an English pop track are compared purely by numbers.
+- Genre and mood matching is all-or-nothing. Closely related styles like "chill" and "relaxed" or "lofi" and "ambient" get zero partial credit, which feels unfair.
+- The system creates a filter bubble by always rewarding the user's stated genre. It will never recommend something outside a user's comfort zone.
 
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
+See the [Model Card](model_card.md) for a deeper analysis.
 
 ---
 
 ## Reflection
 
-Read and complete `model_card.md`:
-
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+My biggest learning moment was realizing that a recommender is just a set of math rules — and those rules carry hidden opinions. When I set genre to 2.0 points, I was deciding that genre matters most, and that single choice shaped every recommendation the system produced. Changing that one number in the weight shift experiment completely reshuffled the results, which made it click for me that the people designing these systems have a lot of invisible influence over what users discover.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+AI tools were helpful for scaffolding the code structure and brainstorming scoring approaches. But I had to double-check the actual math — when I first set up the loop for multiple profiles, the print logic ended up outside the loop and only showed the last profile's results. The AI suggested the right structure, but I still needed to understand the indentation and variable scoping myself to get it working.
+
+What surprised me most was how a simple algorithm with just four rules can still produce results that "feel" like real recommendations. When the Chill Lofi profile got back calm, acoustic tracks, it genuinely felt like a playlist a streaming app would make. That was eye-opening — real apps are more sophisticated, but the core idea is the same: turn preferences into numbers, score everything, sort, and show the top results.
+
+If I extended this project, I would add mood similarity scoring so that related moods like "chill" and "relaxed" get partial credit instead of zero. I would also add a diversity penalty to prevent the top 5 from all being the same genre, and I would expand the catalog to at least 50-100 songs so the rankings are more meaningful.
 
 
 ---
